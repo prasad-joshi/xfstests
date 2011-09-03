@@ -111,7 +111,7 @@ deprecated
 #
 # test-group association ... one line per test
 #
-001 rw dir udf auto quick
+001 rw dir udf auto quick logfs
 002 metadata udf auto quick
 003 db auto quick
 004 db auto quick
