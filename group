@@ -112,16 +112,16 @@ deprecated
 # test-group association ... one line per test
 #
 001 rw dir udf auto quick logfs
-002 metadata udf auto quick
+002 metadata udf auto quick logfs 
 003 db auto quick
 004 db auto quick
-005 dir udf auto quick
-006 dir udf auto quick
-007 dir udf auto quick
+005 dir udf auto quick logfs
+006 dir udf auto quick logfs
+007 dir udf auto quick logfs
 008 rw ioctl auto quick
 009 rw ioctl auto prealloc quick
 010 other udf auto
-011 dir udf auto quick
+011 dir udf auto quick logfs
 012 rw auto quick
 013 other ioctl udf auto quick
 014 rw udf auto quick
