@@ -1,11 +1,10 @@
 #! /bin/bash
-# FS QA Test No. 203
 #
-# Test out reallocation of the extent array in xfs_io.
-# Based on a testcase from Tomasz Majkowski <moosh009@gmail.com>.
+# Check that no duplicate d_off values are returned and that those
+# values are seekable. Most work is done by the C program here.
 #
 #-----------------------------------------------------------------------
-# Copyright (c) 2009 Christoph Hellwig.
+# Copyright (c) 2011 Gražvydas Ignotas
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -22,7 +21,7 @@
 #-----------------------------------------------------------------------
 #
 # creator
-owner=hch@lst.de
+owner=notasas@gmail.com
 
 seq=`basename $0`
 echo "QA output created by $seq"
@@ -31,61 +30,27 @@ here=`pwd`
 tmp=/tmp/$$
 status=1	# failure is the default!
 
-_write_holes()
-{
-	file=$1
-	holes=$2
-	let writes=$holes+1
-	let fsize=$(($writes * 0x100000))
-
-	# prevent EOF preallocation from affecting results
-	xfs_io -f $file -c "truncate $fsize"
-
-	offset=0
-	for i in `seq 0 $writes`; do
-		xfs_io -f $file -c "pwrite -q $offset 64k"
-		let offset=$offset+0x100000
-	done
-}
-
-#       0: [0..7]: 104..111
-#       1: [8..2047]: hole
-_filter_bmap()
-{
-	_filter_scratch |
-	awk '$3 ~ /hole/ { print $1, $2, $3; next }
-             {print $1, $2; next}'
-}
-
 _cleanup()
 {
-	rm -f $SCRATCH_MNT/r??
+	rm -rf $TEST_DIR/ttt
 }
 trap "_cleanup; exit \$status" 0 1 2 3 15
-
-rm -f $seq.full
 
 # get standard environment, filters and checks
 . ./common.rc
 . ./common.filter
 
 # real QA test starts here
-_supported_fs xfs
+_supported_fs generic
 _supported_os Linux
-_require_scratch
-_scratch_mkfs > /dev/null 2>&1
-_scratch_mount > /dev/null 2>&1
 
-for i in 10 14 15 16 17 28 29 30 31; do
-        rm -f $SCRATCH_MNT/hole_file
-	_write_holes $SCRATCH_MNT/hole_file${i} ${i}
+mkdir $TEST_DIR/ttt
+for n in {1..168}; do
+    touch $TEST_DIR/ttt/$n;
 done
-
-for i in 10 14 15 16 17 28 29 30 31; do
-        xfs_bmap $SCRATCH_MNT/hole_file${i} | _filter_bmap
-	echo
-done
+src/t_dir_offset2 $TEST_DIR/ttt
 
 # success, all done
 echo "*** done"
+rm -f $seq.full
 status=0

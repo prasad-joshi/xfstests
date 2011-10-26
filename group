@@ -370,3 +370,10 @@ deprecated
 254 auto quick
 255 auto quick prealloc
 256 auto quick
+257 dir auto quick
+258 auto quick
+259 auto quick
+260 auto quick trim
+261 auto quick quota
+262 auto quick quota
+263 rw auto quick
